@@ -3,5 +3,5 @@
 
 int main(){
     Rocket cursrIV = Rocket(600.33, 83.1, 1598.54+1401);
-    std::cout << cursrIV.predict_apogee_primitive() << '\n' << cursrIV.predict_apogee();
+    std::cout << cursrIV.predict_apogee();
 }

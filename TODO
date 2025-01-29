@@ -1,1 +1,4 @@
 - monte carlo wind???
+- quaternion kinematics
+- pressure to altitude
+- maybe use long long instead of double to prevent floating point error?

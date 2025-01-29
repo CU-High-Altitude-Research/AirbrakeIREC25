@@ -11,6 +11,7 @@ private:
     double referenceArea = 194.0/10000.0; // m/s^2 idk
     double velocity = 0.0; // initial velocity
 
+    double groundAirPressure; // air pressure at launch site
 public:
     /**
      * @brief Constructs a Rocket object with specified initial conditions.
@@ -81,6 +82,18 @@ public:
             //printf("Zenith:%.2f\n", rad2deg*atan(v_y/v_x));
         }
         return apogee;
+    }
+
+    double calculateAirDensity(double altitude) {
+        // Calculate temperature at altitude
+        double temperature = T0 - L * altitude;
+
+        // Calculate pressure at altitude
+        double exponent = (g * M) / (R_star * L);
+        double pressure = P0 * std::pow(1 - (L * altitude / T0), exponent);
+
+        // Calculate air density
+        return pressure / (R * temperature);
     }
 };
 
