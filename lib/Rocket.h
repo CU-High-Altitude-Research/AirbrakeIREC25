@@ -5,32 +5,48 @@
 
 class Rocket {
 private:
-    double dryMass = 17.785; // kg
+    double mass = 17.785; // kg
     double altitude = 0; // meters
     double elevation = 90; // degree (angle from horizontal)
-    double referenceArea = 0.0774371; // idk
-    double dragCoefficient = 0.3; // this should be a function vs mach number
-    double velocity = 0.0;
+    double referenceArea = 194.0/10000.0; // m/s^2 idk
+    double velocity = 0.0; // initial velocity
 
 public:
+    /**
+     * @brief Constructs a Rocket object with specified initial conditions.
+     * @param velocity Initial velocity of the rocket in meters per second.
+     * @param elevation Initial angle from horizontal in degrees.
+     * @param altitude Initial altitude of the rocket in meters.
+     */
     Rocket(double velocity, double elevation, double altitude) :
     velocity(velocity), elevation(elevation), altitude(altitude)
     {
 
     }
 
-    // Function to calculate drag force
-    double calculateDrag() {
-        // Calculate air density at the given altitude
-        double airDensity = calculateAirDensity(altitude);
+    /**
+     * @brief Calculates the drag force acting on the rocket.
+     * TODO: Replace this with a lookup table or polynomial fit for drag coefficient vs Mach number
+     * @return Drag force in newtons.
+     */
+    double getDragCoefficient(double machNumber) {
+        return 0.3; // Default placeholder value
+    }
 
+    /**
+     * @brief Calculates the drag force acting on the rocket.
+     * @return Drag force in newtons.
+     */
+    double calculateDrag(double altitude, double velocity) {
         // Calculate drag using the drag equation
-        double dragForce = 0.5 * dragCoefficient * referenceArea * airDensity * velocity * velocity;
-        
+        double dragForce = 0.5 * getDragCoefficient(69) * referenceArea * calculateAirDensity(altitude) * velocity * velocity;
         return dragForce;
     }
 
-    // energy model neglecting drag
+    /**
+     * @brief Predicts the apogee using a simplified energy model (neglects drag).
+     * @return Predicted apogee in meters.
+     */
     double predict_apogee_primitive(){
         double v_y = velocity * sin(elevation);
 
@@ -39,24 +55,30 @@ public:
         return apogee;
     }
 
-    // simulate flight to predict apogee
+    /**
+     * @brief Simulates the rocket's flight to predict its apogee.
+     *        Considers drag and gravitational forces.
+     * @return Predicted apogee in meters.
+     */
     double predict_apogee(){
-        double v_y = velocity * sin(elevation);
         double v_x = velocity * cos(elevation);
+        double v_y = velocity * sin(elevation);
         double apogee = altitude;
 
         // TODO: move timestep somewhere else
-        double timestep = 0.1; // sec
+        double timestep = 0.5; // sec
         while(v_y > 0){
             apogee += v_y * timestep;
 
-            double dragForce = calculateDrag();
+            double dragForce = calculateDrag(apogee, sqrt(v_y*v_y + v_x*v_x));
             
-            double F_x = - dragForce * cos(elevation);
-            double F_y = - dragForce * sin(elevation) - dryMass * g;
+            double F_x = - dragForce * (v_x / sqrt(v_y*v_y + v_x*v_x));
+            double F_y = - dragForce * (v_y / sqrt(v_y*v_y + v_x*v_x)) - mass * g;
 
-            v_x += (F_x / dryMass) * timestep;
-            v_y += (F_y / dryMass) * timestep;
+            v_x += (F_x / mass) * timestep;
+            v_y += (F_y / mass) * timestep;
+
+            //printf("Zenith:%.2f\n", rad2deg*atan(v_y/v_x));
         }
         return apogee;
     }

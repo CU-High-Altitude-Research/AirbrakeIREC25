@@ -2,6 +2,6 @@
 #include "lib/Rocket.h"
 
 int main(){
-    Rocket cursrIV = Rocket(100.0, 90.0, 1000.0);
+    Rocket cursrIV = Rocket(600.33, 83.1, 1598.54+1401);
     std::cout << cursrIV.predict_apogee_primitive() << '\n' << cursrIV.predict_apogee();
 }

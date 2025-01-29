@@ -16,6 +16,4 @@ double calculateAirDensity(double altitude) {
     return pressure / (R * temperature);
 }
 
-
-
 #endif
